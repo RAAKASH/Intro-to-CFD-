@@ -28,7 +28,7 @@
      total = 20;
      step = 5;
      j = (0:step:total)/dt;
-     plot(0:dx:L , T(0.1/dt,:),0:dx:L , T(0.5/dt,:),0:dx:L , T(1/dt,:),0:dx:L , T(5/dt,:),0:dx:L , T(10/dt,:),0:dx:L , T(15/dt,:),0:dx:L , T(20/dt,:));
+     plot(0:dx:L , T(0.1/dt+1,:),0:dx:L , T(0.5/dt+1,:),0:dx:L , T(1/dt+1,:),0:dx:L , T(5/dt+1,:),0:dx:L , T(10/dt+1,:),0:dx:L , T(15/dt+1,:),0:dx:L , T(20/dt+1,:));
      xlabel('Length along rod')
      ylabel('Temperatures')
      legend('At 0.1s','At 0.5s','At 1s','At 5s','At 10s','At 15s','At 20s');
