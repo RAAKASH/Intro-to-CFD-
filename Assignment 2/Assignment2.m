@@ -1,7 +1,9 @@
-function [ TotalTime ] = Assignment2(L,t,alpha,Nx,dt )
- %% CFD Assignment 2 -Intro (BTCS scheme)
+function [ TotalTime,T ] = Assignment2(L,t,alpha,Nx,dt )
+ 
+%% CFD Assignment 2 -Intro (BTCS scheme)
  % One dimentional unsteady heat conduction equation
 close all;
+
  %% Variable initialization -1
  dx = (L/(Nx-1)); % Distance differential in m
  
@@ -23,35 +25,36 @@ close all;
      M(1,1) =1/dt;
      M(Nx,Nx) =1/dt;
      
-     % Matrix Construction
-     for i = 2:(Nx-1)
+      % Matrix Construction
+      for i = 2:(Nx-1)
       M(i,(i-1):(i+1)) =  [-alpha/(dx^2),1/dt+2*alpha/(dx^2),-alpha/(dx^2)];
-     end
-      A = M\(T(n-1,:)'/dt);
-     
-   % Upper triangular Matrix Conversion
+      end
+      % A = M\(T(n-1,:)'/dt); %CHECK 1
+      
+      % Upper triangular Matrix Conversion
       M = [M,(T(n-1,:)'/dt)];
-     for i = 2:(Nx-2)
+      for i = 2:(Nx-1)
       M(i,:) = M(i,:) - M(i-1,:)*(M(i,i-1)/M(i-1,i-1));    
-     end
+      end
      
-    B = M(:,1:(end-1))\M(:,end);
+      %B = M(:,1:(end-1))\M(:,end);%CHECK 2
     
-    
-    %Solving
-     X = M(:,1:(end-1));
-     T(n,1)=1;
-     T(n,Nx)=0;
-     for i = (Nx-1):-1:(2)
-      T(n,i) = (M(i,end)- X(i,i+1)*T(n,i+1))/M(i,i);
-     end
-     %T(n,:) =B';
-    error(n-1)= rms((A-B)); % Just a check
+   
+      % Solving
+      X = M(:,1:(end-1));
+      T(n,1)=1;
+      T(n,Nx)=0;
+      for i = (Nx-1):-1:(2)
+      T(n,i) = ( M(i,end) - X(i,i+1)*T(n,i+1))/M(i,i);
+      end
+           
+      %D(:,:,n)=M; %CHECK 3
  end
- 
- TotalTime = cputime - t;
+ % T(n,:)- B' %CHECK 4
+  
+ TotalTime = cputime - t; % Computational time
  %% Plotting data for t = 0.1,0.5,1,5,10,15,20 s
-     plot(0:dx:L , T(0.1/dt,:),0:dx:L , T(0.5/dt,:),0:dx:L , T(1/dt,:),0:dx:L , T(5/dt,:),0:dx:L , T(10/dt,:),0:dx:L , T(15/dt,:),0:dx:L , T(20/dt,:));
+     plot(0:dx:L , T(0.1/dt+1,:),0:dx:L , T(0.5/dt+1,:),0:dx:L , T(1/dt+1,:),0:dx:L , T(5/dt+1,:),0:dx:L , T(10/dt+1,:),0:dx:L , T(15/dt+1,:),0:dx:L , T(20/dt+1,:));
      xlabel('Length along rod')
      ylabel('Temperatures')
      legend('At 0.1s','At 0.5s','At 1s','At 5s','At 10s','At 15s','At 20s');
