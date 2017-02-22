@@ -15,7 +15,8 @@
  for i=1:1:5
       for j=1:3
     e(i,j)= Assignment1( L,t,alpha,Nx(i),dt(j)); % Explicit
-    f(i,j)= Assignment2( L,t,alpha,Nx(i),dt(j)); % Implicit
-      end
+    %f(i,j)= Assignment2( L,t,alpha,Nx(i),dt(j)); % Implicit
+    f(i,j)= BTCS( L,t,alpha,Nx(i),dt(j)); % Implicit
+     end
  end
  
