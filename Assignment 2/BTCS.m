@@ -20,7 +20,7 @@ close all;
  % Tn+1(i)-gamma*Tn+1(i+1)+2*gamma*Tn+1(i)-gamma*Tn+1(i-1)= Tn(i) 
  % -gamma*Tn+1(i-1)+Tn+1(i)(2*gamma+1) + -gamma*Tn+1(i+1) =  Tn(i)
  
-    t = cputime; % Calculating Time
+    tic; % Calculating Time
     % Matrix Construction
      M = zeros(Nx);
      M(1,1) =1;
@@ -58,7 +58,7 @@ for n = 2:m
       
  end
   
- TotalTime = cputime - t; % Computational time
+ TotalTime = toc; % Computational time
  %% Plotting data for t = 0.1,0.5,1,5,10,15,20 s
      plot(0:dx:L , T(0.1/dt+1,:),0:dx:L , T(0.5/dt+1,:),0:dx:L , T(1/dt+1,:),0:dx:L , T(5/dt+1,:),0:dx:L , T(10/dt+1,:),0:dx:L , T(15/dt+1,:),0:dx:L , T(20/dt+1,:));
      xlabel('Length along rod')
