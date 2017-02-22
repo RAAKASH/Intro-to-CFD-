@@ -1,5 +1,5 @@
-function [ TotalTime ] = Assignment1( L,t,alpha,Nx,dt)
- %% CFD Assignment1 -Intro
+function [ TotalTime,T ] = Assignment1( L,t,alpha,Nx,dt)
+ %% CFD Assignment1 -Intro (FTCS scheme)
  % One dimentional unsteady heat conduction equation
  close all;
  %% Variable initialization -1
@@ -14,14 +14,14 @@ function [ TotalTime ] = Assignment1( L,t,alpha,Nx,dt)
  %% CSFT scheme 
  % dT/dt = alpha d2T/d2x
  % Tn+1(i) = Tn(i) + alpha*dt(Tn(i+1)+2*Tn(i)+Tn(i-1))/dx2
- t = cputime;
+  tic;
  for n = 2:m
      for i = 2:(Nx-1)
       T(n,i) =  T(n-1,i) + alpha*dt*(T(n-1,i+1)-2*T(n-1,i)+T(n-1,i-1))/dx/dx;
      
      end
  end
- TotalTime = cputime - t;
+ TotalTime =toc;
  %% Plotting data for t = 0.1,0.5,1,5,10,15,20 s
     
     plot(0:dx:L , T(0.1/dt+1,:),0:dx:L , T(0.5/dt+1,:),0:dx:L , T(1/dt+1,:),0:dx:L , T(5/dt+1,:),0:dx:L , T(10/dt+1,:),0:dx:L , T(15/dt+1,:),0:dx:L , T(20/dt+1,:));
