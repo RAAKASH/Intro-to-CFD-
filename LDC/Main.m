@@ -9,50 +9,56 @@ close all;
 clear; 
 clc;
 %% Variable initialization
-x = 1;
-y = 1;
-dx = 0.025;
-dy = 0.025;
+x = 1; % X length
+y = 1; % Y length
+dx = 0.0100; % Grid Size for X direction
+dy = 0.0100; % Grid Size for Y direction
 
-Nx = x/dx + 1;
-Ny = y/dy + 1;
+Nx = x/dx + 1; % No of Grid Points in the X direction
+Ny = y/dy + 1; % No of Grid Points in the Y direction
 
-j1 = 20;
+j1 = 20;  % Specialized for Project
 j2 = 25;
 
 j3 = 5;
 j4 = 10;
 
-psi_1 = -0.1;
-u0 = 1;
+psi_1 = 0;  % Stream function Value specialized for project 
+u0 = 1;     % Velocity of the Lid (m/s)
 
 psi = zeros(Ny,Nx);
 w   = zeros(Ny,Nx);
 u   = zeros(Ny,Nx);
 v   = zeros(Ny,Nx);
 
-Re = 500;
+Re = 800;
 gamma = u0/Re;
-alpha = 1.5;
-err = 10;
+alpha = 1; % Relaxation parameter for 
+
+
+% dt = 0.0001; % Time step
+dt = 0.2/gamma/(1/dx^2 + 1/dy^2); % Minimum time step for least computational expense
+%% Error variables initialization
+err = 10;  
 err1 = err;
+ERR1 = err1;
+ERR2 = err1;
 iter = 1;
 
-
-dt = 0.02;
+fprintf('Variables Initialized \n');
 %% Boundary conditions
 psi(1,:) = psi_1;
 psi(1:(j1-1),1) = psi_1;
 psi(1:(j3-1),end) = psi_1;
-%psi(j1:j2,1) = psi_1-psi_1*(1:(j2-j1+1))/(j2-j1+1);
-
+%psi(j1:j2,1) = psi_1-psi_1*(1:(j2-j1+1))/(j2-j1+1); %Project specialized
+w(:,end) = -2*u0/dx;
 u(end,:) = u0;
-
+fprintf('Boundary condition imposed \n');
 %% 
- while((err>10^-8))
-% while(15/dt/iter>1) % Uncomment for time wise solution
+%  while((ERR2>10^-3))
+  while(dt*iter<100)
      W = w;
-   PSI = psi;
+    PSI = psi;
     psi = streamfunc( w ,psi ,x,j1,j2,j3,j4,alpha);
    
     [u,v] = velocity( u,v,psi,x,j1,j2,j3,j4);
@@ -61,55 +67,53 @@ u(end,:) = u0;
     [ w,iter1] = omega( u,v,psi,u0,w,x,gamma,j1,j2,j3,j4,Re,dt);
      %w
    
- 
+%Different Error calculations 
 err = rms(rms((W - w)));
 err1 = rms(rms((PSI - psi)));
 iter = iter+1;
+[ERR1,ERR2] = rmse_psi( psi,w,dx,gamma,v,u );
 
 % figure(1); clf
 %     subplot(2,1,1),  pcolor(0:dx:x,0:dy:y,psi);   caxis([-0.1 0.01]);  hold on; colorbar; shading interp;  axis square; 
 %     subplot(2,1,2),  pcolor(0:dx:x,0:dy:y,w); caxis([-50  50]);  hold on; colorbar; shading interp;  axis square; drawnow
 
-%  if((err>10^4))
-%      
-%  fprintf('Non convergent');
-%  break;
-%  end
-%  end
-end
-%% check
-close all;
-contour(0:dx:x,0:dy:y,psi,'ShowText','on');
-title('Stream Function Contours');
+fprintf('Iter in main');
+iter
 
-figure(1); clf
-    subplot(2,1,1),  pcolor(0:dx:x,0:dy:y,psi);   caxis([-0.115 0.01]);  hold on; colorbar; shading interp;  axis square; 
-    subplot(2,1,2),  pcolor(0:dx:x,0:dy:y,w); caxis([-50  50]);  hold on; colorbar; shading interp;  axis square; drawnow
- 
-% contour(0:dx:x,0:dy:y,u,'ShowText','on');
-% title('Stream Function Contours');
-% contour(0:dx:x,0:dy:y,w,'ShowText','on');
-% title('Stream Function Contours');
-pause;
-%% Testing solver
-clc 
-clear all
-close all;
-i = 1;
-f=1;
- for u0 = 1:100
-for alpha = 0.01:0.01:2
-Input
-[w,u,v,psi,f] = Solver( w,psi,u,v,j1,j2,j3,j4,x,u0,Re,dt,alpha ,psi_1);
-if(f==0)
-    alpha
-    u0
-    f=0;
+    %Non Convergent Checks
+    if((err>100))
+        fprintf('Omega Non convergent');
+        err
     break;
-end
-if(f==0)
-break
-end
-i=i+1
-end
+    end
+
  end
+
+%% Plotting
+close all;
+Nx = 1/dx+1;
+Ny = 1/dx+1;
+contourf(0:dx:x,0:dy:y,psi,[-linspace(-0.0005,0.0013,20),-logspace(-6.64,-1,30)],'ShowText','off');
+caxis([-0.05 0.005])
+colorbar;
+title('Stream Function Contours');
+axis equal
+pause;
+figure(1); clf
+    subplot(2,1,1),  pcolor(0:dx:x,0:dy:y,psi);   caxis([-0.0005 0.0014]);  hold on; colorbar; shading interp;  axis square; 
+%     subplot(2,1,2),  pcolor(0:dx:x,0:dy:y,w); caxis([-50  50]);  hold on; colorbar; shading interp;  axis square; drawnow
+ 
+pause;
+%% 
+close all;
+vlevels= linspace(-0.0005,0.0013,20);
+contourf(0:dx:x,0:dy:.2,psi(1:length(0:dy:.2),length(0:dx:0):Nx),vlevels,'ShowText','off');
+title('Stream Function Contours');
+colorbar;
+axis equal
+pause
+figure(1); clf
+    subplot(2,1,1),  pcolor(.6:dx:x,0:dy:.3,psi(1:length(0:dy:.3),length(0:dx:0.6):Nx));   caxis([-0.0005 0.0014]);  hold on; colorbar; shading interp;  axis square; 
+%     subplot(2,1,2),  pcolor(0:dx:x,0:dy:y,w); caxis([-50  50]);  hold on; colorbar; shading interp;  axis square; drawnow
+ 
+pause;
