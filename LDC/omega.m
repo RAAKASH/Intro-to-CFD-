@@ -1,12 +1,12 @@
-function [ w ,iter] = omega( u,v,psi,u0,w,x,gamma,j1,j2,j3,j4,Re,dt)
+function [ w ,iter] = omega( u,v,psi,u0,w,x,gamma,j1,j2,j3,j4,Re,dt,alpha1)
 %% Solving for u,v using w
 %% Central difference
 [Ny,Nx] = size(psi);
-dx = x/(Nx+1);
+dx = x/(Nx-1);
 dy = dx;
 err = 10;
 iter = 1;
-alpha1 = 1; %To check if PSOR has any stability difference compared to Gauss seidel
+alpha1 ; %To check if PSOR has any stability difference compared to Gauss seidel
 for j =1:(j1-1) %left
 % w(j,1) = 2*(psi(j,1)-psi(j,2))/dx^2 +2*(psi(j,2)-psi(j,1))/dx; 
 % w(j,end) = 2*(psi(j,end)-psi(j,end-1))/dx^2 -2*(psi(j,end)-psi(j,end-1))/dx; 
@@ -62,18 +62,18 @@ for i = 2:(Nx-1)
 %       w(j,i) = (w(j,i+1)*(1 - dx*u(j,i)/(2*gamma)) + w(j,i-1)*(1 + dx*u(j,i)/(2*gamma)) ...
 %                + w(j+1,i)*(1 - dx*v(j,i)/(2*gamma)) + w(j-1,i)*(1 + dx*v(j,i)/(2*gamma)))/4 ;
 
-    %--------------------- Done at the 3rd attempt[Jacobi method](Converged for Re<250)(M2)---------------
+    %--------------------- Done at the 3rd attempt[Jacobi method(same as the time step (almost))](Converged for Re<250)(M2)---------------
 %      temp(j,i) =    (w(j,i+1)*(1 - dx*u(j,i)/(2*gamma)) + w(j,i-1)*(1 + dx*u(j,i)/(2*gamma)) ...
 %                     + w(j+1,i)*(1 - dx*v(j,i)/(2*gamma)) + w(j-1,i)*(1 + dx*v(j,i)/(2*gamma)))/4 ;
      
-    % ---------------------- Done 2nd (reference)( Converges well at  Re=500 )(M3) ------------------            
-    w(j,i) =  w(j,i) -dt*(( u(j,i)*(w(j,i+1)-w(j,i-1)))/(2*dx) ...
-                          +(v(j,i)*(w(j+1,i)-w(j-1,i)))/(2*dx) ...
-                          - gamma*( w(j,i+1)+w(j,i-1)+ w(j+1,i)+ w(j-1,i) - 4*w(j,i))/(dx^2)   );
+    % ---------------------- Time step (reference)( Converges based on the FTCS condition )(M3) ------------------            
+%     w(j,i) =  w(j,i) -dt*(Upwind(w,u,v,i,j,dx,dy,0.5*((i<(Nx-1))&&(j<(Ny-1))&&(j>2)&&(i>2)))+( u(j,i)*(w(j,i+1)-w(j,i-1)))/(2*dx) ...
+%                           +(v(j,i)*(w(j+1,i)-w(j-1,i)))/(2*dx) ...
+%                           - gamma*( w(j,i+1)+w(j,i-1)+ w(j+1,i)+ w(j-1,i) - 4*w(j,i))/(dx^2)   );
 
  %--------------------- Done 4th[PSOR Gauss seidel method](M4)(Converges for Re<1500 depending on alpha1)-------------------------------
-%     w(j,i) = (1-alpha1)*w(j,i)+ alpha1*(w(j,i+1)*(1 - dx*u(j,i)/(2*gamma)) + w(j,i-1)*(1 + dx*u(j,i)/(2*gamma)) ...
-%                + w(j+1,i)*(1 - dx*v(j,i)/(2*gamma)) + w(j-1,i)*(1 + dx*v(j,i)/(2*gamma)))/4 ;
+    w(j,i) = (1-alpha1)*w(j,i)+ alpha1*(w(j,i+1)*(1 - dx*u(j,i)/(2*gamma)) + w(j,i-1)*(1 + dx*u(j,i)/(2*gamma)) ...
+               + w(j+1,i)*(1 - dx*v(j,i)/(2*gamma)) + w(j-1,i)*(1 + dx*v(j,i)/(2*gamma)))/4 ;
 
 
 

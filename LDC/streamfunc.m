@@ -1,12 +1,12 @@
 function [ psi,f] = streamfunc( w,psi,x,j1,j2,j3,j4,alpha)
 %% Solving laplace equation
-%% Point Gauss seidel
+%% Point Gauss seidel - With relaxation parameter alpha
 err = 10;
 iter = 0;
 [Ny,Nx] = size(w);
-dx = x/(Nx+1);
+dx = x/(Nx-1);
 f=0;
-while((err>0.01))
+ while((err>0.01))
 iter = iter +1;
     PSI =psi;
     
@@ -17,8 +17,8 @@ iter = iter +1;
     for j= 2:(Ny-1)
          psi(j,i) = (1-alpha)*psi(j,i)+alpha*(psi(j-1,i)+psi(j+1,i)+psi(j,i-1)+psi(j,i+1)+w(j,i)*dx^2 )/4; 
     end
-%      psi(j1:j2,1) = psi(j1:j2,3);
-%      psi(j3:j4,end) = psi(j3:j4,end-2);
+     psi(j1:j2,1) = psi(j1:j2,3);     %Project specialized
+     psi(j3:j4,end) = psi(j3:j4,end-1); %Project Specialized
 
     err = rms(rms((PSI - psi)));
     end
@@ -27,7 +27,7 @@ iter = iter +1;
  iter
  err
  f=1;
- break
+  break
  end
-end
+ end
 
