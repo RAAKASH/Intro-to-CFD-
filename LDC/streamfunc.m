@@ -7,7 +7,7 @@ iter = 0;
 dx = x/(Nx-1);
 f=0;
  while((err>0.01))
-iter = iter +1;
+    iter = iter +1;
     PSI =psi;
     
     
@@ -17,17 +17,17 @@ iter = iter +1;
     for j= 2:(Ny-1)
          psi(j,i) = (1-alpha)*psi(j,i)+alpha*(psi(j-1,i)+psi(j+1,i)+psi(j,i-1)+psi(j,i+1)+w(j,i)*dx^2 )/4; 
     end
-     psi(j1:j2,1) = psi(j1:j2,3);     %Project specialized
-     psi(j3:j4,end) = psi(j3:j4,end-1); %Project Specialized
+    end
+    %  Some Project Specialized Boundary Conditions
+    %   psi(j1:j2,1) = psi(j1:j2,2);       %Project specialized
+    %   psi(j3:j4,end) = psi(j3:j4,end-1); %Project Specialized
 
     err = rms(rms((PSI - psi)));
+    
+    if(iter>100)
+      fprintf('Broken in stream function at \n Iteration no =  %d, Error : %d \n',iter,err);
+      f=1; % Flag for Breaking
+      break
     end
- if(iter>100)
- fprintf('Broken in stream function at iter no = ');
- iter
- err
- f=1;
-  break
- end
  end
 
