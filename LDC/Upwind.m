@@ -1,5 +1,5 @@
 function [ fin ] = Upwind(w,u,v,i,j,dx,dy,q)
-% Upwind scheme
+%%  Upwind schemec 
 % q = 0.5;
 if(q~=0)
 w_x1 = (w(j,i-2)-3*w(j,i-1)+3*w(j,i)-w(j,i+1))/(3*dx); 

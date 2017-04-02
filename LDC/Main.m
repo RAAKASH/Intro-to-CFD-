@@ -25,7 +25,7 @@ j2 = 25;  %Specialized for project
 j3 = 5;   %Specialized for project
 j4 = 10;  %Specialized for project
 
-psi_1 = 0;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
+psi_1 = 0.1;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
 u0 = 1;     % Velocity of the Lid (m/s)
 
 %General Variable Declaration
@@ -41,7 +41,7 @@ alpha1 = 1.9; % Relaxation parameter for navierstokes function convergence
 
 % dt = 0.0001; % Time step
 dt = 0.4/gamma/(1/dx^2 + 1/dy^2); % Minimum time step for least computational expense
-t = 1000; %Total time for computation
+t = 10000; %Total time for computation
 
 
 %% Error variables initialization - parameters
@@ -62,14 +62,15 @@ w(:,end) = -2*u0/dx;  %Vorticity
 u(end,:) = u0;
 fprintf('Boundary condition imposed \n');
 %% Solving Using Stream Vorticity Approach
-%  while((ERR2>10^-3))
-  while(dt*iter<t)
+  while((ERR2>10^-4))
+%  while(dt*iter<t)
     W = w; % Old Values of vorticity
     PSI = psi; % Old value of psi
     [psi,f] = streamfunc( w ,psi ,x,j1,j2,j3,j4,alpha);
-  % Checking Break at StreamFunction  
+   % Checking Break at StreamFunction  
     if(f==1)
      alpha = alpha -0.01;
+     [ psi,w,u,err,err1,ERR1,ERR2,iter] = BC( psi,psi_1,u0,j1,j2,j3,j4,dx);
      continue
     end
     
@@ -77,14 +78,14 @@ fprintf('Boundary condition imposed \n');
    
     [w,iter1] = omega( u,v,psi,u0,w,x,gamma,j1,j2,j3,j4,Re,dt,alpha1);
    
-%Different Error calculations 
-[ERR1,ERR2] = rmse_psi( psi,w,dx,gamma,v,u );
-err = rms(rms((W - w)))/rms(rms(W));
-err1 = rms(rms((PSI - psi)))/rms(rms(PSI));
+   %Different Error calculations 
+    [ERR1,ERR2] = rmse_psi( psi,w,dx,gamma,v,u,x );
+    err = rms(rms((W - w)))/rms(rms(W));
+    err1 = rms(rms((PSI - psi)))/rms(rms(PSI));
 
 
     if(mod(iter,200)==0)
-      fprintf('***********Iteration in main**************** \nIteration Number : %d \n',iter);
+      fprintf('***********Iteration in main**************** \nIteration Number : %d \n Error : %d \n',iter,ERR2);
     end
     %Non Convergent Checks ,optimizing Alpha
     if((err>100))
@@ -92,16 +93,19 @@ err1 = rms(rms((PSI - psi)))/rms(rms(PSI));
        alpha1 = alpha1 - 0.01;
        fprintf('New Value of relaxation parameter : %d  \n',alpha1); %Need to reinitialize values
        [ psi,w,u,err,err1,ERR1,ERR2,iter] = BC( psi,psi_1,u0,j1,j2,j3,j4,dx);
-       continue
-       if(alpha1 ==0)
+       
+       if(alpha1 <= 0)
+        clc;
+        fprintf('**********No Solution******************');
         break;
        end
-           
+       continue    
     end
 iter = iter+1;
   end
   
 %% Check -Re 400,1000,3200 (Lid Driven Cavity)
+if(psi_1==0)
 if(Nx == 129)
 if(Re ==400)
 close all;
@@ -164,6 +168,7 @@ legend('Ghia Ghia and Shin','My Code');
 xlabel('U - Velocity at Mid plane');
 ylabel('Ny');   
 title('Results Comparison');
+end
 end
 end
 %% Plotting -General stream Function Plot

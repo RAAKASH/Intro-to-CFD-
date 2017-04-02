@@ -1,8 +1,8 @@
-function [ERR1,ERR2 ] = rmse_psi( psi,w,dx,gamma,v,u )
+function [ERR1,ERR2 ] = rmse_psi( psi,w,dx,gamma,v,u,x)
 % Finds error matrix
 [m,n]=size(psi);
 dy=dx;
-Nx=1/dx+1;
+Nx=x/dx+1;
 Ny=Nx;
 err1 = zeros(m,n);
 err2 =err1;

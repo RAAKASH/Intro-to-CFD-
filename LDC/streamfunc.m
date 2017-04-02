@@ -20,7 +20,7 @@ f=0;
     end
     %  Some Project Specialized Boundary Conditions
     %   psi(j1:j2,1) = psi(j1:j2,2);       %Project specialized
-    %   psi(j3:j4,end) = psi(j3:j4,end-1); %Project Specialized
+       psi(j3:j4,end) = psi(j3:j4,end-1); %Project Specialized
 
     err = rms(rms((PSI - psi)));
     
