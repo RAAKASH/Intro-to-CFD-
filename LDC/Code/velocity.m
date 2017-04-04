@@ -1,9 +1,9 @@
-function [ u,v ] = velocity( u,v,psi,x,j1,j2,j3,j4)
+function [ u,v ] = velocity( u,v,psi,x,y,j1,j2,j3,j4)
 %% Solving for u,v using w
 %% Central difference
 [Ny,Nx] = size(psi);
 dx = x/(Nx-1);
-dy = dx;
+dy = y/(Ny-1);
 for j= j1:j2
  u(j,1) = (psi(j+1,1) - psi(j,1))/(dy);
 end

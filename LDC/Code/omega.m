@@ -1,9 +1,9 @@
-function [ w ,iter] = omega( u,v,psi,u0,w,x,gamma,j1,j2,j3,j4,Re,dt,alpha1)
+function [ w ,iter] = omega( u,v,psi,u0,w,x,y,gamma,j1,j2,j3,j4,Re,dt,alpha1)
 %% Solving Navier Stokes Equation 
 %% Central difference Scheme
 [Ny,Nx] = size(psi);
 dx = x/(Nx-1);
-dy = dx;
+dy = y/(Ny-1);
 err = 10;
 iter = 1;
 alpha1 ; %To check if PSOR has any stability difference compared to Gauss seidel
@@ -54,8 +54,10 @@ end
 %% Boundary Conditions Corners
 w(1,1) = 0;
 w(end,1)=0;
-w(end,end)= w(end,end-1);
-w(end,1) = w(end,2);
+% w(end,end)= w(end,end-1);
+w(end,end)= (u(end,end)-u(end-1,end))/dy - (v(end,end)-v(end,end-1))/dx;
+% w(end,1) = w(end,2);
+w(end,1) = (u(end,1)-u(end-1,1))/dy + (v(end,1)-v(end,2))/dx;
 %while(err>0.0001)
 W = w;
 temp = w;
@@ -76,7 +78,7 @@ for i = 2:(Nx-1)
 %                           +(v(j,i)*(w(j+1,i)-w(j-1,i)))/(2*dx) ...
 %                           - gamma*( w(j,i+1)+w(j,i-1)+ w(j+1,i)+ w(j-1,i) - 4*w(j,i))/(dx^2)   );
 
- %--------------------- Done 4th[PSOR Gauss seidel method](M4)(Converges for Re<1500 depending on alpha1)-------------------------------
+ %--------------------- Done 4th[PSOR Gauss seidel method](M4)(Converges for Re<3500 depending on alpha1)-------------------------------
     w(j,i) = (1-alpha1)*w(j,i)+ alpha1*(w(j,i+1)*(1 - dx*u(j,i)/(2*gamma)) + w(j,i-1)*(1 + dx*u(j,i)/(2*gamma)) ...
                + w(j+1,i)*(1 - dx*v(j,i)/(2*gamma)) + w(j-1,i)*(1 + dx*v(j,i)/(2*gamma)))/4 ;
 

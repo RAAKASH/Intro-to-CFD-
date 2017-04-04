@@ -1,5 +1,5 @@
 function [ERR1,ERR2 ] = rmse_psi( psi,w,dx,gamma,v,u,x)
-% Finds error matrix
+%% Finds error matrix For convergence of Respctive Equations
 [m,n]=size(psi);
 dy=dx;
 Nx=x/dx+1;

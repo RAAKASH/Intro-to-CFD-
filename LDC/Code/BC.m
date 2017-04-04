@@ -10,7 +10,7 @@ psi(1:(j1-1),1) = psi_1; % Left
 psi(1:(j3-1),end) = psi_1; %Right
 psi(j1:j2,1) = psi_1-psi_1*(1:(j2-j1+1))/(j2-j1+1); %Project specialized
 psi(j3:j4,end) = psi_1-psi_1*(1:(j2-j1+1))/(j2-j1+1); %Project specialized
-w(:,end) = -2*u0/dx;  %Vorticity
+w(end,:) = -2*u0/dx;  %Vorticity
 u(end,:) = u0;
 fprintf('Boundary condition imposed \n \n');
 
