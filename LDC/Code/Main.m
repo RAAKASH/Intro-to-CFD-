@@ -244,3 +244,10 @@ close all;
 figure(1); clf
     subplot(1,1,1),  pcolor(.6:dx:x,0:dy:.3,psi(1:length(0:dy:.3),(length(0:dx:0.6)):Nx));   caxis([-0.0005 0.0014]);  hold on; colorbar; shading interp;  axis square; 
 pause;
+%% Report
+x1 = [129,126,125,124,123,110,95,80,65,59,37,23,14,10,9,8,1];
+x11 = (x1-1)/128;
+N = round(x11/dx + 1);
+a = u(N,(Nx+1)/2);
+b = v((Ny+1)/2,N)';
+
