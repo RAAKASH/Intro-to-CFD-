@@ -10,10 +10,11 @@ clear;
 clc;
 % Note to Get results for Lid Driven Cavity Comment project specialized statements in functions
 %% Variable initialization
-x = 1; % X length
-y = 1; % Y length
-dx = 0.00400; % Grid Size for X direction
-dy = 0.00400; % Grid Size for Y direction
+tic; %CPU time 
+x = 0.3; % X length
+y = 0.3; % Y length
+dx = 0.00200; % Grid Size for X direction
+dy = 0.00200; % Grid Size for Y direction
 % dx = x/128;  %For Ghia Ghia and Shin reference
 % dy = x/128;
 % dx = x/160;  %For O. BOTELLA reference
@@ -21,13 +22,16 @@ dy = 0.00400; % Grid Size for Y direction
 Nx = x/dx + 1; % No of Grid Points in the X direction
 Ny = y/dy + 1; % No of Grid Points in the Y direction
 
-j1 = 20;  % Specialized for Project
-j2 = 25;  %Specialized for project
+% j1 =  20;  % Specialized for Project
+% j2 = 25;  %Specialized for project
+%j3 = 5;   %Specialized for project
+%j4 = 10;  %Specialized for project
+j1 = round((20-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
+j2 = round((25-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
+j3 = round((5-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
+j4 = round((10-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 
-j3 = 5;   %Specialized for project
-j4 = 10;  %Specialized for project
-
-psi_1 = 0;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
+psi_1 = -0.1;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
 u0 = 1;     % Velocity of the Lid (m/s)
 
 %General Variable Declaration
@@ -36,12 +40,12 @@ w   = zeros(Ny,Nx);
 u   = zeros(Ny,Nx);
 v   = zeros(Ny,Nx);
 
-Re = 400;
+Re = 100;
 gamma = u0/Re;
-alpha = 1.8; % Relaxation parameter for stream function (to Increase speed of convergence)
+alpha = 1.5; % Relaxation parameter for stream function (to Increase speed of convergence)
 alpha1 = 1.9; % Relaxation parameter for navierstokes function convergence
 
-% dt = 0.0001; % Time step
+% dt = 0.00001; % Time step
 dt = 0.2/gamma/(1/dx^2 + 1/dy^2); % Minimum time step for least computational expense
 t = 10000; %Total time for computation
 
@@ -64,11 +68,11 @@ w(end,:) = -2*u0/dx;  %Vorticity
 u(end,:) = u0;
 fprintf('Boundary condition imposed \n');
 %% Solving Using Stream Vorticity Approach
-  while((ERR2>10^-9))
+  while((ERR2>9*10^-8))
 %  while(dt*iter<t)
     W = w; % Old Values of vorticity
     PSI = psi; % Old value of psi
-    [psi,f] = streamfunc( w ,psi ,x,j1,j2,j3,j4,alpha);
+    [psi,f] = streamfunc( w ,psi ,x,j1,j2,j3,j4,alpha,u,v);
    % Checking Break at StreamFunction  
     if(f==1)
      fprintf('Error in Streamfunc \n');
@@ -111,7 +115,7 @@ fprintf('Boundary condition imposed \n');
     
     
   end
-  
+  TotalCPUtime = toc;
 %% Check -Re 100,400,1000,3200 (Lid Driven Cavity) -With Ghia
 if(psi_1==0)
 if(Re ==100)
@@ -203,9 +207,9 @@ end
 end
 %% Plotting -General stream Function Plot
 close all;
-Nx = 1/dx+1;
-Ny = 1/dx+1;
-contourf(0:dx:x,0:dy:y,psi,[-linspace(-0.0005,0.0013,10),-logspace(-6.64,-0.5,30)],'ShowText','off');
+Nx = x/dx+1;
+Ny = y/dx+1;
+contourf(0:dx:x,0:dy:y,psi,linspace(-1,1,500),'ShowText','off');
 caxis([-0.15 0.02])
 colorbar;
 title('Stream Function Contours');
@@ -213,7 +217,7 @@ axis equal
 pause;
 
 close all;
-contourf(0:dx:x,0:dy:y,w,-linspace(-6,6,13),'ShowText','on');
+contourf(0:dx:x,0:dy:y,w,'ShowText','on');
 colorbar;
 title('Vorticity Contours');
 axis equal
@@ -225,17 +229,30 @@ figure(1); clf
 pause;
  subplot(1,1,1),  pcolor(0:dx:x,0:dy:y,psi);   caxis([-0.12 0.00]);  hold on; colorbar; shading interp;  axis square; 
 
+%% U ,V velocity plots
+ close all;
+ plot(u(:,(Nx+1)/2),0:dx:x);
+ xlabel('U velocity')
+ ylabel('y - Displacement');
+ title('U vs y');
+ pause;
+ close all;
+  plot(v((Ny+1)/2,:),0:dy:y);
+ xlabel('V velocity')
+ ylabel('x -Displacement');
+ title('V vs x');
+pause
 %%  Secondary Vortices Plot
 close all;
 vlevels= linspace(-0.0005,0.0013,10);
-contourf(0:dx:x,0:dy:.5,psi(1:length(0:dy:.5),length(0:dx:0):Nx),vlevels,'ShowText','off');
+contourf(0:dx:x,0:dy:(y/2),psi(1:length(0:dy:(y/2)),length(0:dx:0):Nx),vlevels,'ShowText','off');
 title('Stream Function Contours');
 colorbar;
 axis equal
 pause
 close all;
 vlevels= linspace(-0.0005,0.0013,20);
-contourf(0:dx:0.5,0.5:dy:1,psi((length(0:dy:0.5)):end,1:length(0:dx:0.5)),vlevels,'ShowText','off');
+contourf(0:dx:x/2,y/2:dy:1,psi((length(0:dy:y/2)-1):end,1:length(0:dx:x/2)),vlevels,'ShowText','off');
 title('Stream Function Contours');
 colorbar;
 axis equal
@@ -250,4 +267,3 @@ x11 = (x1-1)/128;
 N = round(x11/dx + 1);
 a = u(N,(Nx+1)/2);
 b = v((Ny+1)/2,N)';
-

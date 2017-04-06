@@ -16,8 +16,11 @@ w(j,1) = 2*(psi(j,1)-psi(j,2))/dx^2;
 end
 
 for j =(j1):j2 %left
-%w(j,end) = -2*(psi(j+1,1)-2*psi(j,1)+psi(j-1,1))/dx^2 ;
-w(j,1) = 2*(psi(j,1)-psi(j,2))/dx^2; 
+% w(j,1) = 2*(psi(j,1)-psi(j,2))/dx^2; 
+w(j,1) = 2*(psi(j,1)-psi(j,2))/dx^2 -(psi(j+2,1)-2*psi(j,1)+psi(j-2,1))/(2*dy)^2; 
+% The above formulation , closely see the last term ,shifting it to 1x1
+% grid causes stability issues hence the 2x2 grid , which is same as below
+% w(j,1) = 2*(psi(j,1)-psi(j,2))/dx^2 - 2*v(j,1)/dx -(u(j+1,1)-u(j-1,1))/(2*dy);
 end
 
 for j =(j2+1):Ny %left
@@ -31,10 +34,12 @@ for j =1:(j3-1) %right
 w(j,end) = 2*(psi(j,end)-psi(j,end-1))/dx^2 ; 
 end
 
-for j =(j3):j4%right
-%w(j,end) = -2*(psi(j,end)-psi(j,end-1))/dx^2 ;
-w(j,end) = 2*(psi(j,end)-psi(j,end-1))/dx^2; 
-
+for j = j3:j4%right
+% w(j,end) = 2*(psi(j,end)-psi(j,end-1))/dx^2; 
+w(j,end) = 2*(psi(j,end)-psi(j,end-1))/dx^2 -(psi(j+2,end)-2*psi(j,end)+psi(j-2,end))/(2*dy)^2; 
+% The above formulation , closely see the last term ,shifting it to 1x1
+% grid causes stability issues hence the 2x2 grid
+% w(j,end) = 2*(psi(j,end)-psi(j,end-1))/dx^2 + 2*v(j,end)/dx -(u(j+1,end)-u(j-1,end))/(2*dy);
 end
 
 
@@ -74,7 +79,7 @@ for i = 2:(Nx-1)
 %                     + w(j+1,i)*(1 - dx*v(j,i)/(2*gamma)) + w(j-1,i)*(1 + dx*v(j,i)/(2*gamma)))/4 ;
      
     % ---------------------- Time step (reference -IISC)( Converges based on the FTCS condition )(M3) ------------------            
-%     w(j,i) =  w(j,i) -dt*(Upwind(w,u,v,i,j,dx,dy,0.5*((i<(Nx-1))&&(j<(Ny-1))&&(j>2)&&(i>2)))+( u(j,i)*(w(j,i+1)-w(j,i-1)))/(2*dx) ...
+%     w(j,i) =  w(j,i) -dt*(Upwind(w,u,v,i,j,dx,dy,0*((i<(Nx-1))&&(j<(Ny-1))&&(j>2)&&(i>2)))+( u(j,i)*(w(j,i+1)-w(j,i-1)))/(2*dx) ...
 %                           +(v(j,i)*(w(j+1,i)-w(j-1,i)))/(2*dx) ...
 %                           - gamma*( w(j,i+1)+w(j,i-1)+ w(j+1,i)+ w(j-1,i) - 4*w(j,i))/(dx^2)   );
 
