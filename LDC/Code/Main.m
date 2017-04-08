@@ -11,12 +11,12 @@ clc;
 % Note to Get results for Lid Driven Cavity Comment project specialized statements in functions
 %% Variable initialization
 tic; %CPU time 
-x = 0.3; % X length
-y = 0.3; % Y length
-dx = 0.00200; % Grid Size for X direction
-dy = 0.00200; % Grid Size for Y direction
-% dx = x/128;  %For Ghia Ghia and Shin reference
-% dy = x/128;
+x = 1; % X length
+y = 1; % Y length
+% dx = 0.00400; % Grid Size for X direction
+% dy = 0.00400; % Grid Size for Y direction
+dx = x/128;  %For Ghia Ghia and Shin reference
+dy = x/128;
 % dx = x/160;  %For O. BOTELLA reference
 % dy = x/160;
 Nx = x/dx + 1; % No of Grid Points in the X direction
@@ -31,7 +31,7 @@ j2 = round((25-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 j3 = round((5-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 j4 = round((10-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 
-psi_1 = -0.1;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
+psi_1 = 0;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
 u0 = 1;     % Velocity of the Lid (m/s)
 
 %General Variable Declaration
@@ -42,7 +42,7 @@ v   = zeros(Ny,Nx);
 
 Re = 100;
 gamma = u0/Re;
-alpha = 1.5; % Relaxation parameter for stream function (to Increase speed of convergence)
+alpha = 1.8; % Relaxation parameter for stream function (to Increase speed of convergence)
 alpha1 = 1.9; % Relaxation parameter for navierstokes function convergence
 
 % dt = 0.00001; % Time step
@@ -132,7 +132,7 @@ v1 = [0.00000,-0.05906,-0.07391,-0.08864,-0.10313,-0.16914,-0.22445,-0.24533,0.0
 Nx1 = [129.0000  125.0000  124.0000  123.0000  122.0000  117.0000  111.0000  104.0000   65.0000   31.0000   30.0000   21.0000   13.0000 11.0000   10.0000    9.0000    1.0000
     1.0000    0.9688    0.9609    0.9531    0.9453    0.9063    0.8594    0.8047    0.5000    0.2344    0.2266    0.1563  0.0781    0.0703    0.0625   0  0.0938  ];
   close all
-plot(v1,(Nx1(1,:)-1)/128,'r +',v((Nx+1)/2,:),(0:(Nx-1)*dx),'b');
+plot(v1,(Nx1(1,:)-1)/128,'r +',v((Nx+1)/2,:),((0:(Nx-1))*dx),'b');
 legend('Ghia Ghia and Shin','My Code');
 xlabel('V - Velocity at Mid plane');
 ylabel('Nx');
@@ -264,6 +264,10 @@ pause;
 %% Report
 x1 = [129,126,125,124,123,110,95,80,65,59,37,23,14,10,9,8,1];
 x11 = (x1-1)/128;
+x2 = [129.0000  125.0000  124.0000  123.0000  122.0000  117.0000  111.0000  104.0000   65.0000   31.0000   30.0000   21.0000   13.0000 11.0000   10.0000    9.0000    1.0000];
+x12 = (x2-1)/128;
+
 N = round(x11/dx + 1);
 a = u(N,(Nx+1)/2);
-b = v((Ny+1)/2,N)';
+N1 = round(x12/dx + 1);
+b = v((Ny+1)/2,N1)';
