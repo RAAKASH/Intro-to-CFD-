@@ -11,12 +11,12 @@ clc;
 % Note to Get results for Lid Driven Cavity Comment project specialized statements in functions
 %% Variable initialization
 tic; %CPU time 
-x = 1; % X length
-y = 1; % Y length
-% dx = 0.00400; % Grid Size for X direction
-% dy = 0.00400; % Grid Size for Y direction
-dx = x/128;  %For Ghia Ghia and Shin reference
-dy = x/128;
+x = 0.3; % X length
+y = 0.3; % Y length
+dx = 0.00200; % Grid Size for X direction (Note dx <0.01)
+dy = 0.00200; % Grid Size for Y direction (Note dy <0.01)
+% dx = x/128;  %For Ghia Ghia and Shin reference
+% dy = x/128;
 % dx = x/160;  %For O. BOTELLA reference
 % dy = x/160;
 Nx = x/dx + 1; % No of Grid Points in the X direction
@@ -31,7 +31,7 @@ j2 = round((25-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 j3 = round((5-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 j4 = round((10-1)*0.01/0.3/(dy/y)+1);% Specialized for Project
 
-psi_1 = 0;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
+psi_1 = -0.8;  % Stream function Value specialized for project ,Non Zero Positive Number for Project
 u0 = 1;     % Velocity of the Lid (m/s)
 
 %General Variable Declaration
@@ -40,16 +40,17 @@ w   = zeros(Ny,Nx);
 u   = zeros(Ny,Nx);
 v   = zeros(Ny,Nx);
 
-Re = 100;
+Re = 1000;
 gamma = u0/Re;
 alpha = 1.8; % Relaxation parameter for stream function (to Increase speed of convergence)
 alpha1 = 1.9; % Relaxation parameter for navierstokes function convergence
 
-% dt = 0.00001; % Time step
-dt = 0.2/gamma/(1/dx^2 + 1/dy^2); % Minimum time step for least computational expense
+ dt = 0.001; % Time step
+% dt = 0.2/gamma/(1/dx^2 + 1/dy^2); % Minimum time step for least computational expense
 t = 10000; %Total time for computation
 
 f = 0 ;% flag
+
 %% Error variables initialization - parameters
 err = 10;    % Percent error of omega
 err1 = err;  % Peercent error of psi
@@ -68,7 +69,7 @@ w(end,:) = -2*u0/dx;  %Vorticity
 u(end,:) = u0;
 fprintf('Boundary condition imposed \n');
 %% Solving Using Stream Vorticity Approach
-  while((ERR2>9*10^-8))
+  while((ERR2>2*10^-8))
 %  while(dt*iter<t)
     W = w; % Old Values of vorticity
     PSI = psi; % Old value of psi
@@ -105,7 +106,7 @@ fprintf('Boundary condition imposed \n');
        
        if(alpha1 <= 0)
         clc;
-        fprintf('**********No Solution******************');
+        fprintf('**********Non Convergent Technique******************');
         break;
        end
        continue    
@@ -116,7 +117,7 @@ fprintf('Boundary condition imposed \n');
     
   end
   TotalCPUtime = toc;
-%% Check -Re 100,400,1000,3200 (Lid Driven Cavity) -With Ghia
+%% Check -Re 100,400,1000,3200,5000,7500 (Lid Driven Cavity) -With Ghia
 if(psi_1==0)
 if(Re ==100)
 close all;
@@ -132,7 +133,7 @@ v1 = [0.00000,-0.05906,-0.07391,-0.08864,-0.10313,-0.16914,-0.22445,-0.24533,0.0
 Nx1 = [129.0000  125.0000  124.0000  123.0000  122.0000  117.0000  111.0000  104.0000   65.0000   31.0000   30.0000   21.0000   13.0000 11.0000   10.0000    9.0000    1.0000
     1.0000    0.9688    0.9609    0.9531    0.9453    0.9063    0.8594    0.8047    0.5000    0.2344    0.2266    0.1563  0.0781    0.0703    0.0625   0  0.0938  ];
   close all
-plot(v1,(Nx1(1,:)-1)/128,'r +',v((Nx+1)/2,:),((0:(Nx-1))*dx),'b');
+plot(v1,(Nx1(1,:)-1)/128,'r +',v((Nx+1)/2,:),(0:(Nx-1)*dx),'b');
 legend('Ghia Ghia and Shin','My Code');
 xlabel('V - Velocity at Mid plane');
 ylabel('Nx');
@@ -204,6 +205,54 @@ xlabel('U - Velocity at Mid plane');
 ylabel('Ny');   
 title('Results Comparison');
 end
+if(Re ==5000)
+    close all;
+v1 = [0.00000,-0.49774,-0.55069,-0.55408,-0.52876,-0.41442,-0.36214,-0.30018,0.00945,0.27280,0.28066,0.35368,0.42951,0.43648,0.43329,0.42447,0.00000]; 
+v2=[1	-0.512100000000000	-0.568900000000000	-0.572600000000000	-0.546000000000000	-0.431400000000000	-0.377600000000000	-0.311200000000000	0.0117000000000000	0.280900000000000	0.288300000000000	0.364900000000000	0.440700000000000	0.446800000000000	0.443300000000000	0.433600000000000	0];
+Nx1 = [129.0000  125.0000  124.0000  123.0000  122.0000  117.0000  111.0000  104.0000   65.0000   31.0000   30.0000   21.0000   13.0000 11.0000   10.0000    9.0000    1.0000
+    1.0000    0.9688    0.9609    0.9531    0.9453    0.9063    0.8594    0.8047    0.5000    0.2344    0.2266    0.1563  0.0781    0.0703    0.0625   0  0.0938  ];
+
+plot(v1,(Nx1(1,:)-1)/128,'r +',v2,(Nx1(1,:)-1)/128,'g x',v((Nx+1)/2,:),(0:(Ny-1))*dx,'b');
+legend('Ghia Ghia and Shin','O. BOTELLA','My Code');
+xlabel('V - Velocity at Mid plane');
+ylabel('Nx');
+title('Results Comparison');
+pause;
+
+close all;
+u1 =[1,0.48223,0.46120,0.45992,0.46036,0.33556,0.20087,0.08183,-0.03039,-0.7404,-0.22855,-0.33050,-0.40435,-0.43643,-0.42901,-0.41165,0];
+y1 = [129,126,125,124,123,110,95,80,65,59,37,23,14,10,9,8,1];
+u2 = [1	0.501500000000000	0.478200000000000	0.477100000000000	0.478000000000000	0.349400000000000	0.204700000000000	0.0818000000000000	-0.0321000000000000	-0.0752000000000000	-0.235900000000000	-0.337500000000000	-0.416900000000000	-0.445600000000000	-0.436000000000000	-0.415300000000000	0];
+plot(u1,(y1-1)/128,'r +',u2,(y1-1)/128,'g x',u(:,(Ny+1)/2),(0:(Ny-1))*dy,'b');
+legend('Ghia Ghia and Shin','O. BOTELLA','My Code');
+xlabel('U - Velocity at Mid plane');
+ylabel('Ny');
+title('Results Comparison');
+pause;
+end
+if(Re ==7500)
+    close all;
+v1 = [0.00000,-0.53858,-0.55216,-0.52347,-0.48590,-0.41050,-0.36213,-0.30048,0.00824,0.27348,0.28117,0.35060,0.41824,0.43564,0.44030,0.43979,0.00000]; 
+Nx1 = [129.0000  125.0000  124.0000  123.0000  122.0000  117.0000  111.0000  104.0000   65.0000   31.0000   30.0000   21.0000   13.0000 11.0000   10.0000    9.0000    1.0000
+    1.0000    0.9688    0.9609    0.9531    0.9453    0.9063    0.8594    0.8047    0.5000    0.2344    0.2266    0.1563  0.0781    0.0703    0.0625   0  0.0938  ];
+
+plot(v1,(Nx1(1,:)-1)/128,'r +',v((Nx+1)/2,:),(0:(Ny-1))*dx,'b');
+legend('Ghia Ghia and Shin','My Code');
+xlabel('V - Velocity at Mid plane');
+ylabel('Nx');
+title('Results Comparison');
+pause;
+
+close all;
+u1 =[1,0.47244,0.47048,0.47323,0.47167,0.34228,0.20591,0.8342,-0.03800,-0.7503,-0.23176,-0.32393,-0.38324,-0.43025,-0.43590,-0.43154,0];
+y1 = [129,126,125,124,123,110,95,80,65,59,37,23,14,10,9,8,1];
+plot(u1,(y1-1)/128,'r +',u(:,(Ny+1)/2),(0:(Ny-1))*dy,'b');
+legend('Ghia Ghia and Shin','My Code');
+xlabel('U - Velocity at Mid plane');
+ylabel('Ny');
+title('Results Comparison');
+pause;
+end
 end
 %% Plotting -General stream Function Plot
 close all;
@@ -261,6 +310,7 @@ close all;
 figure(1); clf
     subplot(1,1,1),  pcolor(.6:dx:x,0:dy:.3,psi(1:length(0:dy:.3),(length(0:dx:0.6)):Nx));   caxis([-0.0005 0.0014]);  hold on; colorbar; shading interp;  axis square; 
 pause;
+%% Report
 %% Report
 x1 = [129,126,125,124,123,110,95,80,65,59,37,23,14,10,9,8,1];
 x11 = (x1-1)/128;
